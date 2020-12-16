@@ -115,7 +115,7 @@ class Contacts extends React.Component {
         return (
             <div>
                 <Alert message={this.state.errorInfo} onClose={this.handeCloseError} />
-                <table class="table" >
+                <table className="table" >
                     <thead>
                         <tr>
                             <th>Name</th>
