@@ -4,20 +4,13 @@ import Contacts from './Contacts.js';
 
 function App() {
 
-  const contacts = [{
-    name: "John",
-    phone: "564645"
-  }, {
-    name: "Megan",
-    phone: "564566"
-  }];
-
   return (
     <div>
       <h1> Hello World!</h1>
-      <Contacts contacts={contacts} />
+      <Contacts />
     </div>
   );
+  
 }
 
 export default App;

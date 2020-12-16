@@ -20,7 +20,7 @@ class NewContact extends React.Component {
     clickAdd() {
         this.props.onAddContact(this.state);
         this.setState({
-            name: '', value: ''
+            name: '', phone: ''
         });
     }
 

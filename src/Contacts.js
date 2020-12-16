@@ -3,19 +3,37 @@ import Contact from './Contact.js';
 import Alert from './Alert.js';
 import NewContact from './NewContact.js';
 import EditContact from './EditContact.js';
+import ContactsApi from './ContactsApi';
 
 class Contacts extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
             errorInfo: null,
-            contacts: this.props.contacts,
+            contacts: [],
             isEditing: {}
         };
         this.handleEdit = this.handleEdit.bind(this);
         this.handleDelete = this.handleDelete.bind(this);
         this.handeCloseError = this.handleCloseError.bind(this);
         this.addContact = this.addContact.bind(this);
+    }
+
+    //React call this when the component is istancied a move to dom tree
+    componentDidMount() {
+        ContactsApi.getAllContacts()
+            .then(
+                (result) => {
+                    this.setState({
+                        contacts: result
+                    })
+                },
+                (error) => {
+                    this.setState({
+                        errorInfo: "Problem with connection to server"
+                    })
+                }
+            )
     }
 
     handleEdit(contact) {
@@ -49,20 +67,19 @@ class Contacts extends React.Component {
     handleSave(name, contact) {
         this.setState(prevState => {
             const isEditing = Object.assign({}, prevState.isEditing);
-            delete isEditing [name];
-            
-            if(name === contact.name){
+            delete isEditing[name];
+
+            if (name === contact.name) {
                 const contacts = prevState.contacts;
-                const pos = contacts.findIndex(c => c.name === contact.name );
+                const pos = contacts.findIndex(c => c.name === contact.name);
                 return {
-                    contacts: [...contacts.slice(0,pos), Object.assign({},contact),...contacts.slice(pos+1)],
+                    contacts: [...contacts.slice(0, pos), Object.assign({}, contact), ...contacts.slice(pos + 1)],
                     isEditing: isEditing
                 }
             }
 
             return {
-                errorInfo: "Cannot edit name",
-
+                errorInfo: "Cannot edit name"
             }
 
         });
@@ -70,7 +87,7 @@ class Contacts extends React.Component {
 
     handleDelete(contact) {
         this.setState(prevState => ({
-            contacts: prevState.contacts.filter((c)=> c.name !== contact.name)
+            contacts: prevState.contacts.filter((c) => c.name !== contact.name)
         }));
     }
 
@@ -106,22 +123,24 @@ class Contacts extends React.Component {
                             <th>&nbsp;</th>
                         </tr>
                     </thead>
-                    <NewContact onAddContact={this.addContact} />
-                    {this.state.contacts.map((contact) =>
-                        !this.state.isEditing[contact.name] ?
-                            <Contact key={contact.name} contact={contact} 
-                            onEdit={this.handleEdit} 
-                            onDelete={this.handleDelete}/>
-                            :
-                            <EditContact key={contact.name} contact={this.state.isEditing[contact.name]}
-                                //other way to define methods, this not necessary in constructor
-                                onCancel={this.handleCancel.bind(this, contact.name)}
-                                onChange={this.handleChange.bind(this, contact.name)}
-                                onSave={this.handleSave.bind(this, contact.name)} />
-                    )}
-                </table >
+                    <tbody>
+                        <NewContact onAddContact={this.addContact} />
+                        {this.state.contacts.map((contact) =>
+                            !this.state.isEditing[contact.name] ?
+                                <Contact key={contact.name} contact={contact}
+                                    onEdit={this.handleEdit}
+                                    onDelete={this.handleDelete} />
+                                :
+                                <EditContact key={contact.name} contact={this.state.isEditing[contact.name]}
+                                    //other way to define methods, this not necessary in constructor
+                                    onCancel={this.handleCancel.bind(this, contact.name)}
+                                    onChange={this.handleChange.bind(this, contact.name)}
+                                    onSave={this.handleSave.bind(this, contact.name)} />
+                        )}
+                    </tbody>
+                </table>
             </div>
-        )
+        );
     }
 }
 
